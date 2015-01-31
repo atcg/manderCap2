@@ -701,3 +701,9 @@ Step 12:
 --------
 We now have our final set of target loci. However, we don't want our loci to be 1,363bp, and the target assemblies contain a mixture of CTS and BTS DNA (we want to design our probes off of CTS sequence). So, we'll run ARC one more time, this time using only CTS reads (AllCTS.un1.fastq, AllCTS.un2.fastq, and AllCTS_joined_and_both_singles.fastq), and RBBHs5iter_chimeramasked_goodOnly.fasta as the targets to assemble. Here is the ARC_config file to use:
 
+(Alternatively, we could just map the CTS DNA to the new, good, target set and pull the consensus sequences out of there...).
+
+Need to come up with: <br>
+  1. A target length distribution that we're shooting for <br>
+  2. A minimum target length to use <br>
+
