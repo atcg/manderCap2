@@ -696,3 +696,8 @@ foreach my $file (@files) {
 ```
 
 That gave us 7,085 targets for a total of 9,658,247bp (average 1,363bp).
+
+Step 12:
+--------
+We now have our final set of target loci. However, we don't want our loci to be 1,363bp, and the target assemblies contain a mixture of CTS and BTS DNA (we want to design our probes off of CTS sequence). So, we'll run ARC one more time, this time using only CTS DNA (AllCTS.un1.fastq, AllCTS.un2.fastq, and AllCTS_joined_and_both_singles.fastq), and RBBHs5iter_chimeramasked_goodOnly.fasta as the targets to assemble. Here is the ARC_config file to use:
+
