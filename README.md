@@ -581,7 +581,7 @@ foreach my $sample (@samples) {
 
 Step 10:
 --------
-Plot the 
+Make the plots.
 
 First, harvest the filenames of all the locus depth files: <br>
 `cd CTSandBTS5iterLocusDepthFiles;`<br>
@@ -641,3 +641,4 @@ Here is what the results look like for a few loci. The black bars on the bottom 
 
 ![image1](images/contig00003--E19A4--OPA.depth.png)
 ![image2](images/contig00061--TTN--8.depth.png)
+![image3](images/contig65877--GLRX--11.depth.png)
