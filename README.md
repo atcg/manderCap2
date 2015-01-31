@@ -644,7 +644,7 @@ Here is what the results look like for a few loci. The black bars on the bottom 
 
 Step 11:
 --------
-Sort the plots that we made in step 10 into good and bad loci. Good lock should have a peak (ideally above 10 reads for most/all samples) centered above the targeted chunk (the black line). Put all of the "good" loci into a new folder. Also put the FASTA of assembled RBBHs into that folder (RBBHs5iter_chimeramasked.fasta). We want to remove all the sequences from RBBHs5iter_chimeramasked.fasta that didn't make the cut. To do that, run the following script:
+Sort the plots that we made in step 10 into good and bad loci. Good loci should have a peak (ideally above 10 reads for most/all samples) centered above the targeted chunk (the black line). Put all of the "good" loci into a new folder. Also put the FASTA of assembled RBBHs into that folder (RBBHs5iter_chimeramasked.fasta). We want to remove all the sequences from RBBHs5iter_chimeramasked.fasta that didn't make the cut. To do that, run the following script:
 
 `perl belowScript.pl --targets RBBHs5iter_chimeramasked.fasta --out RBBHs5iter_chimeramasked_goodOnly.fasta`
 ```perl
