@@ -624,6 +624,11 @@ for (i in 1:length(depthFiles$V1)) {
   # This actually works if there are multiple HSPs for that target, because targetStart and
   # targetEnd become arrays, and the segments call parses them properly.
   segments(targetStart, 0, targetEnd, 0, lwd=5)
+  
+  # Let's also print horizontal dotted lines at y=10, and y=20
+  abline(h=10, lty=3)
+  abline(h=20, lty=3)
+  
   dev.off()
   rm(locusData)
   gc() # The depth files are potentially large--do as much as we can to reduce memory usage
@@ -633,3 +638,6 @@ for (i in 1:length(depthFiles$V1)) {
 Finishing up:
 -------------
 Here is what the results look like for a few loci:
+
+[image1](images/contig00003--E19A4--OPA.depth.png)
+[image2](images/contig00061--TTN--8.depth.png)
