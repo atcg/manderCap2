@@ -635,8 +635,7 @@ for (i in 1:length(depthFiles$V1)) {
 }
 ```
 
-Finishing up:
--------------
+
 Here is what the results look like for a few loci. The black bars on the bottom correspond to where the original target sequence (the portion of sequence that capture probes were derived from) matched the assembled contig in a blast search.
 
 ![image1](images/contig00003--E19A4--OPA.depth.png)
