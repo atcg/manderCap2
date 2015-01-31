@@ -641,3 +641,58 @@ Here is what the results look like for a few loci. The black bars on the bottom 
 ![image1](images/contig00003--E19A4--OPA.depth.png)
 ![image2](images/contig00061--TTN--8.depth.png)
 ![image3](images/contig65877--GLRX--11.depth.png)
+
+Step 11:
+--------
+Sort the plots that we made in step 10 into good and bad loci. Good lock should have a peak (ideally above 10 reads for most/all samples) centered above the targeted chunk (the black line). Put all of the "good" loci into a new folder. Also put the FASTA of assembled RBBHs into that folder (RBBHs5iter_chimeramasked.fasta). We want to remove all the sequences from RBBHs5iter_chimeramasked.fasta that didn't make the cut. To do that, run the following script:
+
+`perl belowScript.pl --targets RBBHs5iter_chimeramasked.fasta --out RBBHs5iter_chimeramasked_goodOnly.fasta`
+```perl
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Bio::SeqIO;
+use Getopt::Long;
+
+my $help = 0;
+my $targets;
+my $outFile;
+
+GetOptions ("targets=s"     => \$targets,
+            "out=s"         => \$outFile,
+            "help|man"      => \$help) || die "Couldn't get options with GetOpt::Long: $!\n";
+
+
+if (!$targets or !$outFile or $help) {
+    die "Must supply --targets and --out.\n";    
+}
+
+my $seqIn = Bio::SeqIO->new(-file => $targets,
+                            -format => 'fasta');
+my $seqOut = Bio::SeqIO->new(-file => ">$outFile",
+                             -format => 'fasta');
+
+my %seqHash;
+
+while (my $seq = $seqIn->next_seq()) {
+    my $seqName = $1 if ($seq->display_id() =~ /\_\:\_(.*)\_\:\_/);
+    $seqHash{$seqName} = $seq;
+}
+
+opendir(my $DIR, "./") or die "cannot open dir ./: $!";
+my @files = readdir $DIR;
+closedir $DIR;
+
+foreach my $file (@files) {
+    $file =~ s/\-\-/\|/g;
+    #print $file . "\n";
+
+    if ($file =~ /(.*)\.depth\.png$/) {
+        print "SeqName = $1\n";
+        $seqOut->write_seq($seqHash{$1});
+    }
+}
+```
+
+That gave us 7,085 targets for a total of 9,658,247bp (average 1,363bp).
