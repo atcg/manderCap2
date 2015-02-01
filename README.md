@@ -699,9 +699,110 @@ That gave us 7,085 targets for a total of 9,658,247bp (average 1,363bp).
 
 Step 12:
 --------
-We now have our final set of target loci. However, we don't want our loci to be 1,363bp, and the target assemblies contain a mixture of CTS and BTS DNA (we want to design our probes off of CTS sequence). So, we'll run ARC one more time, this time using only CTS reads (AllCTS.un1.fastq, AllCTS.un2.fastq, and AllCTS_joined_and_both_singles.fastq), and RBBHs5iter_chimeramasked_goodOnly.fasta as the targets to assemble. Here is the ARC_config file to use:
+We now have our final set of target loci. However, we don't want our loci to be 1,363bp, and the target assemblies contain a mixture of CTS and BTS DNA (we want to design our probes off of CTS sequence). So, we'll run ARC one more time, this time using only CTS reads (AllCTS.un1.fastq, AllCTS.un2.fastq, and AllCTS_joined_and_both_singles.fastq), and RBBHs5iter_chimeramasked_goodOnly.fasta as the targets to assemble.
 
-(Alternatively, we could just map the CTS DNA to the new, good, target set and pull the consensus sequences out of there...).
+We need to alter the name of the targets to be put back into ARC, however, because they already contain the `_:_` keys that ARC uses. We'll do that with the following script:
+
+`perl belowScript.pl --in RBBHs5iter_chimeramasked_goodOnly.fasta --out RBBHs5iter_chimeramasked_goodOnly_renamed.fasta`
+
+```perl
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Getopt::Long;
+
+use Bio::SeqIO;
+
+my $help = 0;
+my $in;
+my $out;
+
+
+GetOptions ("in=s"     => \$in,
+            "out=s"         => \$out,
+            "help|man"      => \$help) || die "Couldn't get options with GetOpt::Long: $!\n";
+
+
+if (!$in or !$out or $help) {
+    die "Must supply --in and --out.\n";    
+}
+
+# After the first round of ARC, the target names in the FASTA file look like this:
+# >CTSandBTS5iter_:_contig00003|E19A4|OPA_:_Contig002_contig00003|E19A4|OPA
+
+# We want to revise those to look something like this:
+# >contig00003--E19A4--OPA---CTSandBTS5iter
+#
+# So we'll apped the names with ---CTSandBTS5iterGoodTarget, and replace the vertical bars with --.
+# First need to harvest the target name between the _:_(.*)_:_
+
+my $seqIn = Bio::SeqIO->new(-file => $in,
+                            -format => 'fasta');
+
+my $seqOut = Bio::SeqIO->new(-file => ">$out",
+                             -format => 'fasta');
+
+while (my $seq = $seqIn->next_seq()) {
+    if ($seq->display_id() =~ /\_\:\_(.*)\_\:\_/) {
+        # $1 is the target name
+        my $newID = $1 . "---CTSandBTS5iterGoodTarget";
+        $newID =~ s/\|/\-\-/g;
+        $seq->display_id($newID);
+    } else {
+        die "Target didn't have the _:_(.*)_:_ pattern in its name!\n";
+    }
+    $seqOut->write_seq($seq);
+}
+```
+
+
+
+Here is the ARC_config file to use:
+
+```
+## Name=value pairs:		
+## reference: contains reference sequences in fasta format		
+## numcycles: maximum number of times to try remapping		
+## mapper: the mapper to use (blat/bowtie2)		
+## assembler: the assembler to use (newbler/spades)		
+## nprocs: number of cores to use		
+## format: fasta or fasta, all must be the same		
+## verbose: control mapping/assembly log generation (True/False)		
+## urt: For Newbler, enable use read tips mode (True/False)		
+## map_against_reads: On iteration 1, skip assembly, map against mapped reads (True/False)		
+## assemblytimeout: kill assemblies and discard targets if they take longer than N minutes		
+##		
+## Columns:		
+## Sample_ID:Sample_ID		
+## FileName: path for fasta/fasta file		
+## FileType: PE1, PE2, or SE		
+## FileFormat: fasta or fasta		
+# reference=RBBHs5iter_chimeramasked_goodOnly_renamed.fasta		
+# numcycles=3		
+# mapper=bowtie2		
+# assembler=spades		
+# nprocs=31		
+# format=fastq		
+# verbose=True		
+# urt=True		
+# map_against_reads=False		
+# assemblytimeout=120		
+# bowtie2_k=5		
+# rip=True		
+# cdna=False		
+# subsample=1		
+# maskrepeats=True
+# workingdirectory=/home/evan/ramdisk/		
+Sample_ID	FileName	FileType
+CTS_RBBHround2	AllCTS.un1.fastq	PE1
+CTS_RBBHround2	AllCTS.un2.fastq	PE2
+CTS_RBBHround2	AllCTS_joined_and_both_singles.fastq	SE
+```
+
+
+...
+OR, should I do this all over again, using just the CTS sequence on the original target set with ARC?...
 
 Need to come up with: <br>
   1. A target length distribution that we're shooting for <br>
